@@ -13,7 +13,10 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://stitch-flow-n1yo.vercel.app/login",
+  credentials: true
+}));
 app.use(express.json());
 
 // ========== EXISTING ROUTES ==========
