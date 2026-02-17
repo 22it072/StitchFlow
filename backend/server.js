@@ -51,6 +51,9 @@ app.get('/api/health', (req, res) => {
     ]
   });
 });
+app.get('/', (req, res) => {
+  res.send('🚀 StitchFlow Backend API Running Successfully');
+});
 
 // Error handling
 app.use(notFound);
