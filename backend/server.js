@@ -14,7 +14,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://stitch-flow-n1yo.vercel.app/login",
+  origin: "https://stitch-flow-n1yo.vercel.app",
   credentials: true
 }));
 app.use(express.json());
