@@ -810,15 +810,15 @@ function _drawChallanTable(engine, challans, { symbol, costPrec, dateFormat }, h
   });
 
   const columns = [
-    { header: 'Challan No.',   dataKey: 'challanNo',  width: 28, halign: 'left'   },
-    { header: 'Issue Date',    dataKey: 'issueDate',  width: 22, halign: 'center' },
-    { header: 'Due Date',      dataKey: 'dueDate',    width: 22, halign: 'center' },
-    { header: 'Items',         dataKey: 'items',      width: 12, halign: 'center' },
-    { header: 'Meters',        dataKey: 'meters',     width: 18, halign: 'right'  },
-    { header: 'Amount',        dataKey: 'amount',     width: 24, halign: 'right'  },
-    { header: 'Paid',          dataKey: 'paid',       width: 22, halign: 'right'  },
-    { header: 'Balance',       dataKey: 'balance',    width: 22, halign: 'right'  },
-    { header: 'Status',        dataKey: 'status',     width: 18, halign: 'center' },
+    { header: 'Challan No.',   dataKey: 'challanNo',  width: 27, halign: 'left'   },
+    { header: 'Issue Date',    dataKey: 'issueDate',  width: 20, halign: 'center' },
+    { header: 'Due Date',      dataKey: 'dueDate',    width: 20, halign: 'center' },
+    { header: 'Items',         dataKey: 'items',      width: 11, halign: 'center' },
+    { header: 'Meters',        dataKey: 'meters',     width: 17, halign: 'right'  },
+    { header: 'Amount',        dataKey: 'amount',     width: 23, halign: 'right'  },
+    { header: 'Paid',          dataKey: 'paid',       width: 21, halign: 'right'  },
+    { header: 'Balance',       dataKey: 'balance',    width: 24, halign: 'right'  },
+    { header: 'Status',        dataKey: 'status',     width: 19, halign: 'center' },
   ];
 
   engine.table(
@@ -901,14 +901,14 @@ function _drawOverdueTable(engine, overdueChallans, { symbol, costPrec, dateForm
   const totalInterest = overdueChallans.reduce((s, c) => s + (c.currentInterest || 0), 0);
 
   const columns = [
-    { header: 'Challan No.',   dataKey: 'challanNo',   width: 30, halign: 'left'   },
-    { header: 'Due Date',      dataKey: 'dueDate',     width: 25, halign: 'center' },
-    { header: 'Days Overdue',  dataKey: 'daysOverdue', width: 25, halign: 'center' },
-    { header: 'Invoice Amt',   dataKey: 'amount',      width: 27, halign: 'right'  },
-    { header: 'Paid',          dataKey: 'paid',        width: 22, halign: 'right'  },
-    { header: 'Balance',       dataKey: 'balance',     width: 25, halign: 'right'  },
-    { header: 'Interest',      dataKey: 'interest',    width: 22, halign: 'right'  },
-    { header: 'Total Due',     dataKey: 'total',       width: 24, halign: 'right'  },
+    { header: 'Challan No.',   dataKey: 'challanNo',   width: 28, halign: 'left'   },
+    { header: 'Due Date',      dataKey: 'dueDate',     width: 22, halign: 'center' },
+    { header: 'Days Overdue',  dataKey: 'daysOverdue', width: 22, halign: 'center' },
+    { header: 'Invoice Amt',   dataKey: 'amount',      width: 25, halign: 'right'  },
+    { header: 'Paid',          dataKey: 'paid',        width: 20, halign: 'right'  },
+    { header: 'Balance',       dataKey: 'balance',     width: 22, halign: 'right'  },
+    { header: 'Interest',      dataKey: 'interest',    width: 20, halign: 'right'  },
+    { header: 'Total Due',     dataKey: 'total',       width: 23, halign: 'right'  },
   ];
 
   engine.table(

@@ -174,15 +174,15 @@ export function drawHeader(engine, config = {}) {
   if (status) {
     const statusDef = _resolveStatus(status);
     const badgeLabel = statusLabel || status;
-    const badgeW = engine.badge(
-      badgeLabel,
-      statusDef,
-      0,  // temp x — calculate after
-      band2Y + 7
-    );
-
-    // Re-draw badge at correct position
-    const badgeX = x + contentW - badgeW - 2;
+    
+    // Calculate badge width matching badge() method exactly
+    const text = String(badgeLabel).toUpperCase(); // Badge method converts to uppercase
+    const padH = SPACING.badgePadH;
+    const tW = engine.textWidth(text, FONTS.size.badge, 'bold');
+    const badgeW = tW + padH * 2;
+    
+    // Draw badge at correct position with extra margin (only once)
+    const badgeX = x + contentW - badgeW - 4; // Increased margin from 2 to 4
     engine.badge(badgeLabel, statusDef, badgeX, band2Y + 7);
   }
 

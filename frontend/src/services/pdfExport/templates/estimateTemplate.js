@@ -684,15 +684,15 @@ function _drawYarnSummaryTable(engine, estimate, { warpYarn, weftYarn, weft2Yarn
   }
 
   const columns = [
-    { header: 'Section',      dataKey: 'section',   width: 18,  halign: 'center' },
-    { header: 'Yarn Name',    dataKey: 'yarnName',  width: 42,  halign: 'left'   },
-    { header: 'Category',     dataKey: 'category',  width: 20,  halign: 'center' },
-    { header: 'Denier',       dataKey: 'denier',    width: 18,  halign: 'center' },
-    { header: 'TPM',          dataKey: 'tpm',       width: 14,  halign: 'center' },
-    { header: 'Filament',     dataKey: 'filament',  width: 18,  halign: 'center' },
-    { header: 'Price',        dataKey: 'price',     width: 22,  halign: 'right'  },
+    { header: 'Section',      dataKey: 'section',   width: 17,  halign: 'center' },
+    { header: 'Yarn Name',    dataKey: 'yarnName',  width: 40,  halign: 'left'   },
+    { header: 'Category',     dataKey: 'category',  width: 19,  halign: 'center' },
+    { header: 'Denier',       dataKey: 'denier',    width: 17,  halign: 'center' },
+    { header: 'TPM',          dataKey: 'tpm',       width: 13,  halign: 'center' },
+    { header: 'Filament',     dataKey: 'filament',  width: 17,  halign: 'center' },
+    { header: 'Price',        dataKey: 'price',     width: 21,  halign: 'right'  },
     { header: 'GST',          dataKey: 'gst',       width: 12,  halign: 'center' },
-    { header: 'Price + GST',  dataKey: 'priceGst',  width: 22,  halign: 'right'  },
+    { header: 'Price + GST',  dataKey: 'priceGst',  width: 21,  halign: 'right'  },
   ];
 
   engine.table(
@@ -882,12 +882,12 @@ function _drawVersionHistory(engine, estimate, { symbol, dateFormat }) {
     }));
 
   const columns = [
-    { header: 'Version',    dataKey: 'version',  width: 20,  halign: 'center' },
-    { header: 'Date',       dataKey: 'date',     width: 30,  halign: 'center' },
-    { header: 'Edited By',  dataKey: 'editedBy', width: 40,  halign: 'left'   },
-    { header: 'Quality',    dataKey: 'quality',  width: 45,  halign: 'left'   },
+    { header: 'Version',    dataKey: 'version',  width: 19,  halign: 'center' },
+    { header: 'Date',       dataKey: 'date',     width: 29,  halign: 'center' },
+    { header: 'Edited By',  dataKey: 'editedBy', width: 39,  halign: 'left'   },
+    { header: 'Quality',    dataKey: 'quality',  width: 43,  halign: 'left'   },
     { header: 'Cost/m',     dataKey: 'cost',     width: 27,  halign: 'right'  },
-    { header: 'Weight',     dataKey: 'weight',   width: 22,  halign: 'right'  },
+    { header: 'Weight',     dataKey: 'weight',   width: 25,  halign: 'right'  },
   ];
 
   engine.table(columns, rows, {

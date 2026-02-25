@@ -317,13 +317,13 @@ function _drawItemsTable(engine, challan, headerFn) {
 
   const columns = [
     { header: '#',           dataKey: 'no',            width: 8,   halign: 'center' },
-    { header: 'Quality Name',dataKey: 'qualityName',   width: 48,  halign: 'left'   },
-    { header: 'Panna',       dataKey: 'panna',         width: 16,  halign: 'center' },
-    { header: 'Meters',      dataKey: 'meters',        width: 22,  halign: 'right'  },
-    { header: 'Wt/m (Kg)',   dataKey: 'wtPerMeter',    width: 22,  halign: 'right'  },
-    { header: 'Weight (Kg)', dataKey: 'totalWeight',   width: 24,  halign: 'right'  },
-    { header: 'Price/m',     dataKey: 'pricePerMeter', width: 24,  halign: 'right'  },
-    { header: 'Amount',      dataKey: 'amount',        width: 24,  halign: 'right'  },
+    { header: 'Quality Name',dataKey: 'qualityName',   width: 45,  halign: 'left'   },
+    { header: 'Panna',       dataKey: 'panna',         width: 15,  halign: 'center' },
+    { header: 'Meters',      dataKey: 'meters',        width: 21,  halign: 'right'  },
+    { header: 'Wt/m (Kg)',   dataKey: 'wtPerMeter',    width: 21,  halign: 'right'  },
+    { header: 'Weight (Kg)', dataKey: 'totalWeight',   width: 23,  halign: 'right'  },
+    { header: 'Price/m',     dataKey: 'pricePerMeter', width: 23,  halign: 'right'  },
+    { header: 'Amount',      dataKey: 'amount',        width: 26,  halign: 'right'  },
   ];
 
   engine.table(
