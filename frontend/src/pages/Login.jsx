@@ -1,400 +1,271 @@
+// frontend/src/pages/Login.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Sparkles, TrendingUp, Shield, Zap } from 'lucide-react';
+import {
+  Mail, Lock, Eye, EyeOff,
+  TrendingUp, Shield, Sparkles, ArrowRight,
+  CheckCircle,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import Input from '../components/common/Input';
-import Button from '../components/common/Button';
+import StitchFlowLogo from '../components/common/StitchFlowLogo';
 
-// ============================================================
-// StitchFlow Brand Logo Component
-// ============================================================
-const StitchFlowLogo = ({ size = 'md', variant = 'dark' }) => {
-  const sizes = {
-    sm: { container: 'w-8 h-8', text: 'text-lg', sub: 'text-xs' },
-    md: { container: 'w-12 h-12', text: 'text-2xl', sub: 'text-sm' },
-    lg: { container: 'w-16 h-16', text: 'text-3xl', sub: 'text-base' },
-    xl: { container: 'w-20 h-20', text: 'text-4xl', sub: 'text-lg' },
-  };
-
-  const s = sizes[size];
-  const textColor = variant === 'light' ? 'text-white' : 'text-gray-900';
-  const subColor = variant === 'light' ? 'text-indigo-200' : 'text-indigo-500';
-
-  return (
-    <div className="flex items-center space-x-3">
-      {/* Logo Icon - Thread/Needle inspired */}
-      <div className={`${s.container} relative flex-shrink-0`}>
-        <div className="w-full h-full rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 flex items-center justify-center shadow-lg shadow-indigo-500/30 relative overflow-hidden">
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-1 left-1 w-2 h-2 border border-white rounded-full" />
-            <div className="absolute bottom-1 right-1 w-1.5 h-1.5 border border-white rounded-full" />
-          </div>
-          {/* SF Monogram with stitch lines */}
-          <svg
-            viewBox="0 0 40 40"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-3/4 h-3/4"
-          >
-            {/* Needle */}
-            <path
-              d="M8 32 L28 8"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-            {/* Needle eye */}
-            <ellipse
-              cx="27"
-              cy="9"
-              rx="3"
-              ry="2"
-              transform="rotate(-35 27 9)"
-              stroke="white"
-              strokeWidth="1.8"
-              fill="none"
-            />
-            {/* Thread curve */}
-            <path
-              d="M8 32 Q18 20 22 28 Q26 36 34 10"
-              stroke="rgba(255,255,255,0.7)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              fill="none"
-              strokeDasharray="2 2"
-            />
-            {/* Stitch dots */}
-            <circle cx="12" cy="28" r="1.5" fill="white" opacity="0.9" />
-            <circle cx="18" cy="22" r="1.5" fill="white" opacity="0.9" />
-            <circle cx="24" cy="18" r="1.5" fill="white" opacity="0.9" />
-          </svg>
-        </div>
-      </div>
-      {/* Brand Name */}
-      <div>
-        <h1 className={`${s.text} font-bold tracking-tight ${textColor} leading-none`}>
-          Stitch<span className="text-indigo-600" style={{ color: variant === 'light' ? '#a5b4fc' : '#4f46e5' }}>Flow</span>
-        </h1>
-        <p className={`${s.sub} font-medium ${subColor} leading-tight mt-0.5`}>
-          Garment Pre-Costing Platform
-        </p>
-      </div>
-    </div>
-  );
-};
-
-// ============================================================
-// Feature Highlight Card for Right Panel
-// ============================================================
-const FeatureCard = ({ icon: Icon, title, description }) => (
-  <div className="flex items-start space-x-3 p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20">
-    <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-      <Icon className="w-5 h-5 text-white" />
-    </div>
-    <div>
-      <h4 className="text-white font-semibold text-sm">{title}</h4>
-      <p className="text-indigo-200 text-xs mt-0.5 leading-relaxed">{description}</p>
-    </div>
+/* ── small helpers ── */
+const StatBadge = ({ value, label, icon: Icon }) => (
+  <div className="flex flex-col items-center gap-1 bg-white/10 border border-white/20 backdrop-blur-sm rounded-2xl px-5 py-4">
+    <Icon className="w-4 h-4 text-purple-200 mb-0.5" />
+    <span className="text-2xl font-black text-white">{value}</span>
+    <span className="text-xs font-medium text-purple-300">{label}</span>
   </div>
 );
 
-// ============================================================
-// Animated Fabric/Thread Background Pattern
-// ============================================================
-const FabricPattern = () => (
-  <svg
-    className="absolute inset-0 w-full h-full opacity-5"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      <pattern id="fabric" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-        <path d="M0 20 H40 M20 0 V40" stroke="white" strokeWidth="0.5" />
-        <circle cx="20" cy="20" r="2" fill="white" />
-        <circle cx="0" cy="0" r="1" fill="white" />
-        <circle cx="40" cy="0" r="1" fill="white" />
-        <circle cx="0" cy="40" r="1" fill="white" />
-        <circle cx="40" cy="40" r="1" fill="white" />
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="url(#fabric)" />
-  </svg>
+const FeatureRow = ({ text }) => (
+  <li className="flex items-center gap-3 text-purple-100 text-sm font-medium">
+    <CheckCircle className="w-4 h-4 text-purple-300 flex-shrink-0" />
+    {text}
+  </li>
 );
 
-// ============================================================
-// Stat Badge
-// ============================================================
-const StatBadge = ({ value, label }) => (
-  <div className="text-center p-4 rounded-2xl bg-white/10 border border-white/20 backdrop-blur-sm">
-    <div className="text-3xl font-bold text-white">{value}</div>
-    <div className="text-indigo-200 text-xs font-medium mt-1">{label}</div>
-  </div>
-);
-
-// ============================================================
-// Main Login Component
-// ============================================================
+/* ════════════════════════════════════════ */
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false,
-  });
+  const [loading, setLoading]           = useState(false);
+  const [showPass, setShowPass]         = useState(false);
+  const [remember, setRemember]         = useState(false);
+  const [form, setForm]                 = useState({ email: '', password: '' });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
-  };
+  const handle = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const success = await login(formData.email, formData.password);
-    if (success) {
-      navigate('/dashboard');
-    }
+    const ok = await login(form.email, form.password);
+    if (ok) navigate('/dashboard');
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex">
 
-      {/* ===================== LEFT: Login Form ===================== */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-white">
-        <div className="w-full max-w-[420px]">
+      {/* ══════════ LEFT — brand panel ══════════ */}
+      <aside className="hidden lg:flex lg:w-[52%] relative overflow-hidden flex-col">
 
-          {/* Logo */}
-          <div className="mb-10">
-            <StitchFlowLogo size="md" variant="dark" />
-          </div>
+        {/* gradient bg */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-700 via-purple-700 to-indigo-800" />
 
-          {/* Welcome Heading */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 tracking-tight">
-              Welcome back 👋
-            </h2>
-            <p className="mt-2 text-gray-500 text-base leading-relaxed">
-              Sign in to your account to continue managing your garment estimates.
-            </p>
-          </div>
+        {/* subtle fabric weave pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.07]"
+          xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="lp" width="36" height="36" patternUnits="userSpaceOnUse">
+              <path d="M0 18 C6 12, 12 24, 18 18 C24 12, 30 24, 36 18"
+                stroke="white" strokeWidth="1.2" fill="none" />
+              <path d="M0 36 C6 30, 12 42, 18 36 C24 30, 30 42, 36 36"
+                stroke="white" strokeWidth="1.2" fill="none" />
+              <line x1="0" y1="0" x2="0" y2="36" stroke="white" strokeWidth="0.5" />
+              <line x1="18" y1="0" x2="18" y2="36" stroke="white" strokeWidth="0.5" />
+              <line x1="36" y1="0" x2="36" y2="36" stroke="white" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#lp)" />
+        </svg>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+        {/* blur blobs */}
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 -right-20 w-80 h-80 bg-indigo-500/25 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Email */}
+        {/* ── content ── */}
+        <div className="relative z-10 flex flex-col justify-between h-full p-12">
+
+          {/* logo */}
+          <StitchFlowLogo size="md" theme="white" />
+
+          {/* centre copy */}
+          <div className="space-y-8">
+            {/* big icon */}
+            <div className="w-[72px] h-[72px] bg-white/10 border border-white/20 rounded-3xl flex items-center justify-center">
+              <svg viewBox="0 0 48 48" className="w-11 h-11" fill="none">
+                <path d="M6 36 C12 36,16 24,22 21 C28 18,30 30,36 27 C40 25,42 18,44 14"
+                  stroke="white" strokeWidth="3" strokeLinecap="round" fill="none"/>
+                <circle cx="6"  cy="36" r="3" fill="white" opacity="0.9"/>
+                <circle cx="22" cy="21" r="2.5" fill="white" opacity="0.75"/>
+                <circle cx="36" cy="27" r="2.5" fill="white" opacity="0.75"/>
+                <circle cx="44" cy="14" r="2" fill="white" opacity="0.6"/>
+                <line x1="44" y1="12" x2="46" y2="7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
+
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Mail className="w-4.5 h-4.5 text-gray-400" size={18} />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="you@company.com"
-                  required
-                  className="w-full pl-10 pr-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all duration-200"
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Lock className="text-gray-400" size={18} />
-                </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Enter your password"
-                  required
-                  className="w-full pl-10 pr-12 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:bg-white transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Remember Me + Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center cursor-pointer group">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleChange}
-                    className="sr-only"
-                  />
-                  <div className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition-all ${formData.rememberMe ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300 bg-white'}`}
-                    style={{ width: '18px', height: '18px' }}
-                    onClick={() => setFormData({ ...formData, rememberMe: !formData.rememberMe })}
-                  >
-                    {formData.rememberMe && (
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                </div>
-                <span className="ml-2 text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
-                  Remember me
-                </span>
-              </label>
-              <a
-                href="#"
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
-              >
-                Forgot password?
-              </a>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin w-5 h-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  <span>Signing in...</span>
-                </>
-              ) : (
-                <span>Sign In to StitchFlow</span>
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-gray-200" />
-            <span className="px-4 text-xs text-gray-400 font-medium">New to StitchFlow?</span>
-            <div className="flex-1 border-t border-gray-200" />
-          </div>
-
-          {/* Sign Up Link */}
-          <Link
-            to="/register"
-            className="w-full py-3 px-4 bg-white border-2 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 text-gray-700 hover:text-indigo-700 font-semibold rounded-xl transition-all duration-200 flex items-center justify-center text-sm"
-          >
-            Create a free account →
-          </Link>
-
-          {/* Trust Badge */}
-          <div className="mt-8 flex items-center justify-center space-x-6">
-            <div className="flex items-center space-x-1.5 text-xs text-gray-400">
-              <Shield size={13} className="text-green-500" />
-              <span>SSL Secured</span>
-            </div>
-            <div className="w-px h-4 bg-gray-200" />
-            <div className="flex items-center space-x-1.5 text-xs text-gray-400">
-              <Sparkles size={13} className="text-indigo-500" />
-              <span>Industry Standard</span>
-            </div>
-            <div className="w-px h-4 bg-gray-200" />
-            <div className="flex items-center space-x-1.5 text-xs text-gray-400">
-              <Zap size={13} className="text-yellow-500" />
-              <span>Real-time Calc</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ===================== RIGHT: Brand Panel ===================== */}
-      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #3730a3 0%, #4f46e5 40%, #7c3aed 100%)'
-        }}
-      >
-        {/* Fabric texture background */}
-        <FabricPattern />
-
-        {/* Decorative circles */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5" />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-white/5" />
-        <div className="absolute top-1/2 right-8 w-32 h-32 rounded-full bg-white/5 transform -translate-y-1/2" />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-
-          {/* Top: Logo (light version) */}
-          <StitchFlowLogo size="md" variant="light" />
-
-          {/* Middle: Main Content */}
-          <div className="space-y-6">
-            <div>
-              <div className="inline-flex items-center space-x-2 bg-white/15 border border-white/25 rounded-full px-4 py-1.5 mb-5">
-                <Sparkles size={14} className="text-indigo-200" />
-                <span className="text-indigo-100 text-xs font-semibold tracking-wide uppercase">
-                  Intelligent Pre-Costing
-                </span>
-              </div>
-              <h2 className="text-4xl font-bold text-white leading-tight mb-4">
-                Accurate Grey Cloth
-                <br />
-                <span className="text-indigo-200">Estimation in Seconds</span>
+              <h2 className="text-[2.6rem] font-black text-white leading-[1.15] mb-4">
+                Intelligent<br />
+                Garment&nbsp;
+                <span className="text-purple-300">Pre-Costing</span><br />
+                Platform
               </h2>
-              <p className="text-indigo-200 text-base leading-relaxed max-w-sm">
-                Input garment parameters and receive instant, high-accuracy preliminary cost estimates trusted by fashion merchandisers and designers worldwide.
+              <p className="text-purple-200 text-[0.95rem] leading-relaxed max-w-[340px]">
+                Input garment parameters and receive instant, high-accuracy
+                grey cloth estimates — built for fashion merchandisers
+                and textile designers.
               </p>
             </div>
 
-            {/* Feature Cards */}
-            <div className="space-y-3 max-w-sm">
-              <FeatureCard
-                icon={Zap}
-                title="Real-Time Weight & Cost Calculation"
-                description="Industry-standard formulas for warp, weft & grey cloth weight estimation"
-              />
-              <FeatureCard
-                icon={TrendingUp}
-                title="Yarn Library & Price Management"
-                description="Manage yarn denier, TPM, filament count with auto-formatted display names"
-              />
-              <FeatureCard
-                icon={Shield}
-                title="Multi-Company Role-Based Access"
-                description="Secure company isolation with admin, editor, and viewer permission levels"
-              />
-            </div>
+            <ul className="space-y-2.5">
+              {[
+                'Grey cloth weight & cost in seconds',
+                'Industry-standard warp & weft formulas',
+                'Smart yarn library with auto-formatting',
+                'Multi-company RBAC & team collaboration',
+              ].map((f) => <FeatureRow key={f} text={f} />)}
+            </ul>
           </div>
 
-          {/* Bottom: Stats */}
-          <div>
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <StatBadge value="50K+" label="Estimates Created" />
-              <StatBadge value="1,200+" label="Active Users" />
-              <StatBadge value="99.2%" label="Calculation Accuracy" />
-            </div>
-            <p className="text-indigo-300 text-xs text-center">
-              Trusted by textile manufacturers and garment exporters
-            </p>
+          {/* stats row */}
+          <div className="grid grid-cols-3 gap-3">
+            <StatBadge value="50K+" label="Estimates"   icon={TrendingUp} />
+            <StatBadge value="2.5K+" label="Users"      icon={Sparkles}   />
+            <StatBadge value="99%"   label="Accuracy"   icon={Shield}     />
           </div>
         </div>
-      </div>
+      </aside>
+
+      {/* ══════════ RIGHT — form panel ══════════ */}
+      <main className="flex-1 flex items-center justify-center bg-gray-50 p-6 sm:p-10">
+        <div className="w-full max-w-[420px]">
+
+          {/* mobile logo */}
+          <div className="lg:hidden mb-8">
+            <StitchFlowLogo size="md" theme="dark" />
+          </div>
+
+          {/* heading */}
+          <div className="mb-8">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-violet-50 border border-violet-100 rounded-full text-xs font-semibold text-violet-700 mb-4">
+              <Sparkles className="w-3 h-3" /> Welcome back
+            </span>
+            <h1 className="text-[2rem] font-black text-gray-900 leading-tight">
+              Sign in to{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">
+                StitchFlow
+              </span>
+            </h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Access your garment costing workspace.
+            </p>
+          </div>
+
+          {/* card */}
+          <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/70 border border-gray-100 p-8 space-y-5">
+            <form onSubmit={submit} className="space-y-5">
+
+              {/* email */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type="email" name="email"
+                    value={form.email} onChange={handle}
+                    placeholder="you@company.com" required
+                    className="w-full pl-10 pr-4 py-3 text-sm font-medium bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 focus:bg-white transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    name="password"
+                    value={form.password} onChange={handle}
+                    placeholder="Enter your password" required
+                    className="w-full pl-10 pr-12 py-3 text-sm font-medium bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 focus:bg-white transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((p) => !p)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* remember + forgot */}
+              <div className="flex items-center justify-between">
+                <label
+                  className="flex items-center gap-2 cursor-pointer select-none"
+                  onClick={() => setRemember((p) => !p)}
+                >
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all
+                    ${remember ? 'bg-violet-600 border-violet-600' : 'border-gray-300'}`}>
+                    {remember && (
+                      <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-600 font-medium">Remember me</span>
+                </label>
+                <a href="#" className="text-sm font-semibold text-violet-600 hover:text-violet-700 transition-colors">
+                  Forgot password?
+                </a>
+              </div>
+
+              {/* submit */}
+              <button
+                type="submit" disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600
+                  hover:from-violet-700 hover:to-indigo-700 text-white text-sm font-bold
+                  shadow-lg shadow-violet-500/30 hover:shadow-violet-500/40
+                  transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0
+                  flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    <span>Signing in…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In to StitchFlow</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* footer */}
+          <p className="mt-6 text-center text-sm text-gray-500">
+            Don't have an account?{' '}
+            <Link to="/register" className="font-bold text-violet-600 hover:text-violet-700 transition-colors">
+              Create one free →
+            </Link>
+          </p>
+
+          {/* trust row */}
+          <div className="mt-6 flex items-center justify-center gap-5 text-xs text-gray-400">
+            <span className="flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5" /> SSL Secured
+            </span>
+            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <span className="flex items-center gap-1.5">
+              <CheckCircle className="w-3.5 h-3.5" /> GDPR Compliant
+            </span>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
