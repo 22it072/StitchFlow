@@ -47,7 +47,9 @@ import ProductionEntry from './pages/ProductionEntry';
 import WeavingProductionHistory from './pages/WeavingProductionHistory';
 import ProductionEntryDetails from './pages/ProductionEntryDetails';
 import MaintenanceLog from './pages/MaintenanceLog';
-
+import LoomDetail from './pages/LoomDetail';
+import BeamDetail from './pages/BeamDetail';
+import WeavingSetDetail from './pages/WeavingSetDetail';
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -216,6 +218,9 @@ const AppContent = () => {
           <Route path="/weaving/production" element={<WeavingProductionHistory />} />
           <Route path="/weaving/production/:id" element={<ProductionEntryDetails />} />
           <Route path="/weaving/maintenance" element={<MaintenanceLog />} />
+          <Route path="/weaving/looms/:id" element={<LoomDetail />} />
+          <Route path="/weaving/beams/:id" element={<BeamDetail />} />
+          <Route path="/weaving/sets/:id" element={<WeavingSetDetail />} />
 
           {/* Company Management */}
           <Route path="company/settings" element={<CompanySettings />} />
