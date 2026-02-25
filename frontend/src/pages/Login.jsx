@@ -83,7 +83,7 @@ const Login = () => {
 
           {/* centre copy */}
           <div className="space-y-8">
-            {/* big icon */}
+            {/* big icon
             <div className="w-[72px] h-[72px] bg-white/10 border border-white/20 rounded-3xl flex items-center justify-center">
               <svg viewBox="0 0 48 48" className="w-11 h-11" fill="none">
                 <path d="M6 36 C12 36,16 24,22 21 C28 18,30 30,36 27 C40 25,42 18,44 14"
@@ -94,7 +94,7 @@ const Login = () => {
                 <circle cx="44" cy="14" r="2" fill="white" opacity="0.6"/>
                 <line x1="44" y1="12" x2="46" y2="7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
               </svg>
-            </div>
+            </div> */}
 
             <div>
               <h2 className="text-[2.6rem] font-black text-white leading-[1.15] mb-4">
