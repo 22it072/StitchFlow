@@ -1,4 +1,4 @@
-// frontend/src/pages/PartyDetails.jsx (Enhanced Version)
+// frontend/src/pages/PartyDetails.jsx (Enhanced Version with PDF Export)
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -36,13 +36,19 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Badge from '../components/common/Badge';
 import Input from '../components/common/Input';
+import PdfExportButton from '../components/common/PdfExportButton';
 import { partyAPI, challanAPI } from '../services/api';
 import { formatCurrency, getDaysOverdue } from '../utils/challanCalculations';
+import { useCompany } from '../context/CompanyContext';
+import { useSettings } from '../context/SettingsContext';
+import { generatePartyPDF } from '../services/pdfExport/templates/partyTemplate';
 import toast from 'react-hot-toast';
 
 const PartyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { activeCompany } = useCompany();
+  const { settings } = useSettings();
   
   const [party, setParty] = useState(null);
   const [challans, setChallans] = useState([]);
@@ -228,6 +234,28 @@ const PartyDetails = () => {
     toast.success('Data refreshed successfully');
   };
 
+  const handleDownloadPDF = async () => {
+    await generatePartyPDF(
+      party,
+      filteredChallans,
+      stats,
+      activeCompany,
+      settings,
+      { preview: false, dateRange }
+    );
+  };
+
+  const handlePreviewPDF = async () => {
+    await generatePartyPDF(
+      party,
+      filteredChallans,
+      stats,
+      activeCompany,
+      settings,
+      { preview: true, dateRange }
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -295,13 +323,18 @@ const PartyDetails = () => {
           >
             Refresh
           </Button>
-          <Button 
-            variant="ghost" 
-            icon={Download}
-            onClick={() => window.print()}
-          >
-            Export
-          </Button>
+          
+          {/* PDF Export Button */}
+          <PdfExportButton
+            onExport={handleDownloadPDF}
+            onPreview={handlePreviewPDF}
+            showPreview
+            showDropdown
+            label="Export PDF"
+            variant="secondary"
+            size="md"
+          />
+          
           <Button 
             icon={Edit2}
             onClick={() => navigate(`/parties/${id}/edit`)}

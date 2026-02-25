@@ -17,6 +17,7 @@ import {
   Edit2,
   Printer,
   Download,
+  Eye,
   CreditCard,
   FileText,
   Building2,
@@ -43,11 +44,16 @@ import {
   getDaysOverdue,
 } from '../utils/challanCalculations';
 import toast from 'react-hot-toast';
+import { useSettings } from '../context/SettingsContext';
+import { useCompany } from '../context/CompanyContext';
+import { generateChallanPDF } from '../services/pdfExport/templates/challanTemplate';
 
 const ChallanDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { hasPermission } = usePermissions();
+  const { settings } = useSettings();
+  const { activeCompany } = useCompany();
   
   const [challan, setChallan] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +61,8 @@ const ChallanDetail = () => {
   const [showMarkPaidModal, setShowMarkPaidModal] = useState(false);
   const [showTimelineModal, setShowTimelineModal] = useState(false);
   const [liveInterest, setLiveInterest] = useState(0);
+  const [exporting, setExporting] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     items: true,
     payments: true,
@@ -165,6 +173,43 @@ const ChallanDetail = () => {
     toast.success('Challan number copied');
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await generateChallanPDF(
+        challan,
+        liveInterest,
+        activeCompany,
+        settings,
+        { preview: false }
+      );
+      toast.success('PDF exported successfully');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error('Error generating PDF');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    setPreviewing(true);
+    try {
+      await generateChallanPDF(
+        challan,
+        liveInterest,
+        activeCompany,
+        settings,
+        { preview: true }
+      );
+    } catch (error) {
+      console.error('PDF preview error:', error);
+      toast.error('Error generating PDF preview');
+    } finally {
+      setPreviewing(false);
+    }
+  };
+
   const toggleSection = (section) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -236,11 +281,23 @@ const ChallanDetail = () => {
         </div>
         
         <div className="flex gap-3 mt-4 md:mt-0">
-          <Button variant="ghost" icon={Printer} onClick={() => window.print()}>
-            Print
+          <Button
+            variant="ghost"
+            icon={Eye}
+            onClick={handlePreview}
+            loading={previewing}
+            title="Preview PDF in new tab"
+          >
+            Preview
           </Button>
-          <Button variant="ghost" icon={Download}>
-            Download
+          <Button
+            variant="secondary"
+            icon={Download}
+            onClick={handleExport}
+            loading={exporting}
+            title="Download Challan PDF"
+          >
+            Export PDF
           </Button>
           {hasPermission('production:edit') && challan.status === 'Open' && (
             <Button 

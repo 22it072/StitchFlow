@@ -238,9 +238,12 @@ const createChallan = async (req, res) => {
       ],
     });
     
-    // Update party outstanding
-    party.currentOutstanding += totals.subtotalAmount;
-    await party.save();
+    // Update party outstanding — use updateOne to skip full validation
+    // (avoids partyCode required error on old documents missing that field)
+    await Party.updateOne(
+      { _id: partyId },
+      { $inc: { currentOutstanding: totals.subtotalAmount } }
+    );
     
     const populatedChallan = await Challan.findById(challan._id)
       .populate('party', 'partyName contactPerson phone')
@@ -330,8 +333,10 @@ const recordPayment = async (req, res) => {
       challan.status = 'Paid';
       
       // Update party outstanding
-      challan.party.currentOutstanding -= challan.totals.subtotalAmount;
-      await challan.party.save();
+      await Party.updateOne(
+        { _id: challan.party._id },
+        { $inc: { currentOutstanding: -challan.totals.subtotalAmount } }
+      );
     }
     
     // Add history
@@ -409,8 +414,10 @@ const deleteChallan = async (req, res) => {
     
     // Update party outstanding if challan was open
     if (challan.status === 'Open' || challan.status === 'Overdue') {
-      challan.party.currentOutstanding -= challan.totals.subtotalAmount;
-      await challan.party.save();
+      await Party.updateOne(
+        { _id: challan.party._id },
+        { $inc: { currentOutstanding: -challan.totals.subtotalAmount } }
+      );
     }
     
     await challan.deleteOne();

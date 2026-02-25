@@ -276,10 +276,18 @@ const NewChallan = () => {
       const challanData = {
         partyId: formData.partyId,
         issueDate: formData.issueDate,
+        dueDate: getDueDate().toISOString(),
         paymentTermsDays: formData.paymentTermsDays,
         items: formData.items.map(item => ({
           estimateId: item.estimateId,
           orderedMeters: item.orderedMeters,
+          // Snapshot fields required by schema
+          qualityName: item.qualityName,
+          panna: item.panna,
+          pricePerMeter: item.pricePerMeter,
+          weightPerMeter: item.weightPerMeter,
+          calculatedWeight: item.calculatedWeight,
+          calculatedAmount: item.calculatedAmount,
         })),
         notes: formData.notes,
       };

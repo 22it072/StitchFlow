@@ -13,6 +13,8 @@ import {
   TrendingUp,
   FileText,
   CheckCircle,
+  Download,
+  Eye,
 } from 'lucide-react';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
@@ -21,17 +23,24 @@ import Modal from '../components/common/Modal';
 import { productionAPI } from '../services/api';
 import { useNotifications } from '../context/NotificationContext';
 import { getEfficiencyRating } from '../utils/productionCalculations';
+import { useSettings } from '../context/SettingsContext';
+import { useCompany } from '../context/CompanyContext';
+import { generateProductionPDF } from '../services/pdfExport/templates/productionTemplate';
 
 const ProductionDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { notifySuccess, notifyError } = useNotifications();
-  
+  const { settings } = useSettings();
+  const { activeCompany } = useCompany();
+
   const [production, setProduction] = useState(null);
   const [breakdown, setBreakdown] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   useEffect(() => {
     const fetchProduction = async () => {
@@ -59,6 +68,43 @@ const ProductionDetail = () => {
       notifyError('Error deleting record');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await generateProductionPDF(
+        production,
+        breakdown,
+        activeCompany,
+        settings,
+        { preview: false }
+      );
+      notifySuccess('PDF exported successfully');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      notifyError('Error generating PDF');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handlePreview = async () => {
+    setPreviewing(true);
+    try {
+      await generateProductionPDF(
+        production,
+        breakdown,
+        activeCompany,
+        settings,
+        { preview: true }
+      );
+    } catch (error) {
+      console.error('PDF preview error:', error);
+      notifyError('Error generating PDF preview');
+    } finally {
+      setPreviewing(false);
     }
   };
 
@@ -97,6 +143,24 @@ const ProductionDetail = () => {
           <Badge variant={production.status === 'active' ? 'success' : 'default'} size="lg">
             {production.status}
           </Badge>
+          <Button
+            variant="secondary"
+            icon={Eye}
+            onClick={handlePreview}
+            loading={previewing}
+            title="Preview PDF in new tab"
+          >
+            Preview
+          </Button>
+          <Button
+            variant="primary"
+            icon={Download}
+            onClick={handleExport}
+            loading={exporting}
+            title="Download PDF"
+          >
+            Export PDF
+          </Button>
           <Button variant="danger" icon={Trash2} onClick={() => setDeleteModal(true)}>
             Delete
           </Button>

@@ -13,24 +13,31 @@ import {
   Info,
   TrendingUp,
   AlertCircle,
+  Download,
+  Eye
 } from 'lucide-react';
+
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
+import PdfExportButton from '../components/common/PdfExportButton';
 import { estimateAPI } from '../services/api';
 import { useSettings } from '../context/SettingsContext';
+import { useCompany } from '../context/CompanyContext';
 import { formatCurrency, formatDate, safeDivide } from '../utils/formatters';
 import { 
   generateYarnDisplayName, 
   getYarnCategoryColor, 
   getYarnCategoryLabel 
 } from '../utils/yarnFormatter';
+import { generateEstimatePDF } from '../services/pdfExport/templates/estimateTemplate';
 import toast from 'react-hot-toast';
 
 const EstimateDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { settings } = useSettings();
+  const { activeCompany } = useCompany();
   const [estimate, setEstimate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [versionModal, setVersionModal] = useState(false);
@@ -89,6 +96,14 @@ const EstimateDetail = () => {
       console.error('Error reverting:', error);
       toast.error('Failed to revert');
     }
+  };
+
+  const handleDownloadPDF = async () => {
+    await generateEstimatePDF(estimate, activeCompany, settings, { preview: false });
+  };
+
+  const handlePreviewPDF = async () => {
+    await generateEstimatePDF(estimate, activeCompany, settings, { preview: true });
   };
 
   // Helper to get yarn display name (handles both old and new data structure)
@@ -206,6 +221,18 @@ const EstimateDetail = () => {
               History ({estimate.versions.length})
             </Button>
           )}
+
+          {/* PDF Export Button */}
+          <PdfExportButton
+            onExport={handleDownloadPDF}
+            onPreview={handlePreviewPDF}
+            showPreview
+            showDropdown
+            label="Export PDF"
+            variant="secondary"
+            size="md"
+          />
+
           <Button
             variant="secondary"
             icon={Copy}

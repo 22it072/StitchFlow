@@ -25,15 +25,19 @@ import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Badge from '../components/common/Badge';
 import Modal from '../components/common/Modal';
+import PdfExportButton from '../components/common/PdfExportButton';
 import { weavingProductionAPI } from '../services/weavingApi';
 import { useCompany } from '../context/CompanyContext';
+import { useSettings } from '../context/SettingsContext';
 import { usePermissions } from '../hooks/usePermissions';
+import { generateProductionEntryPDF } from '../services/pdfExport/templates/productionEntryTemplate';
 import toast from 'react-hot-toast';
 
 const ProductionEntryDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { activeCompany } = useCompany();
+  const { settings } = useSettings();
   const { hasPermission } = usePermissions();
 
   const [entry, setEntry] = useState(null);
@@ -81,13 +85,12 @@ const ProductionEntryDetails = () => {
     navigate(`/weaving/production/${id}/edit`);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadPDF = async () => {
+    await generateProductionEntryPDF(entry, activeCompany, settings, { preview: false });
   };
 
-  const handleExport = () => {
-    // Export logic - you can implement CSV or PDF export
-    toast.info('Export functionality coming soon');
+  const handlePreviewPDF = async () => {
+    await generateProductionEntryPDF(entry, activeCompany, settings, { preview: true });
   };
 
   const formatDate = (date) => {
@@ -176,12 +179,17 @@ const ProductionEntryDetails = () => {
           </div>
         </div>
         <div className="flex gap-3">
-          <Button variant="ghost" icon={Download} onClick={handleExport}>
-            Export
-          </Button>
-          <Button variant="ghost" icon={Printer} onClick={handlePrint}>
-            Print
-          </Button>
+          {/* PDF Export Button */}
+          <PdfExportButton
+            onExport={handleDownloadPDF}
+            onPreview={handlePreviewPDF}
+            showPreview
+            showDropdown
+            label="Export PDF"
+            variant="secondary"
+            size="md"
+          />
+          
           {hasPermission('production:edit') && (
             <Button variant="secondary" icon={Edit2} onClick={handleEdit}>
               Edit
